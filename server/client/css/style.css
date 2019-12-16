@@ -1,0 +1,90 @@
+*{
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.header h1{
+    text-align: center;
+    /*font-family: Arial, Helvetica, sans-serif;*/
+    font-size: 30px;
+}
+
+.header h3{
+    text-align: left;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+}
+
+.rules{
+    border-color: gray;
+    border: 3px;
+}
+
+a{
+    text-decoration: none;
+}
+
+button{
+    display: block;
+    margin: 0 auto;
+    width: 259px;
+    height: 63px;
+    box-shadow: inset 0px 0 0 0 rgba(0, 0, 0, 0.12);
+    border: none;
+    border-radius: 4px;
+    background-image: linear-gradient(to top, #ff008c 0%, #ffa8d8);
+    cursor: pointer;
+    outline: none;
+    color: black;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.game_field{
+    display: flex;
+    justify-content: space-around;
+}
+
+.game_field table{
+    margin: 50px auto;
+    width: 550px;
+    height: 550px;
+    border-spacing: 0;
+}
+
+.game_field table td{
+    text-align: center;
+    border: 2px solid black;
+}
+
+.game_field table .nav{
+    border: none;
+    width: 50px;
+    height: 50;
+}
+
+.game_field .buttons{
+    width: 500px;
+}
+
+.game_field .buttons .game_options, .next_action{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.game_field .buttons .game_options{
+    justify-content: center;
+}
+
+.game_field .buttons .game_options button{
+    width: 50px;
+    height: 50px;
+    background-image: none;
+    background-color: red;;
+}
+
+.game_field .buttons{
+    display: flex;
+    justify-content: space-between;
+}
