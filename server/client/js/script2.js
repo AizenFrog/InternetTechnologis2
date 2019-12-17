@@ -31,7 +31,11 @@ table.onclick = function(event) {
     if (!canSetPoint(Number(curr_id[0]), Number(curr_id[1])))
         return;
     source_game[Number(curr_id[0])][Number(curr_id[1])] = curr_act;
-    setData(Number(curr_id[0]), Number(curr_id[1]), curr_act);
+    reqForm(tapCount, Number(curr_id[0]), Number(curr_id[1]), curr_act);
+    if (tapCount < 3)
+        tapCount++;
+    else
+        tapCount = 1;
     td.innerHTML = curr_act;
 }
 
@@ -43,6 +47,7 @@ document.getElementById('3').addEventListener("click", function(){curr_act = '*'
 document.getElementById('4').addEventListener("click", function(){curr_act = '%';});
 
 // механика игры
+tapCount = 1;
 function canSetPoint(i, j) {
     let isTrue = false;
     if (source_game[i][j] == " " && curr_act != "*" && curr_act != "%") {
@@ -84,29 +89,46 @@ function canSetPoint(i, j) {
 
 // отправка измененных даннх
 
+let req = {
+    i1: 1,
+    j1: 1,
+    val1: "X",
+    i2: 1,
+    j2: 1,
+    val2: "X",
+    i3: 1,
+    j3: 1,
+    val3: "X",
+    move: 1
+};
+
+function reqForm(count, i, j, val){
+    if (count == 1){
+        req.i1 = i;
+        req.j1 = j;
+        req.val1 = val;
+    } else if (count == 2){
+        req.i2 = i;
+        req.j2 = j;
+        req.val2 = val;
+    } else if (count == 3){
+        req.i3 = i;
+        req.j3 = j;
+        req.val3 = val;
+    }
+}
+
 let next_act = document.getElementById("next_act");
 next_act.onclick = function(event) {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             console.log("данные отправлены");
-            /// console.log(this.responseText);
         }
     }
-
-    let formData = new FormData();
-    formData.append("name", source_game);
-    xhttp.open("POST", "http://127.0.0.1:3000/", true);
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send(formData);
-    outData.length = 0;
-}
-
-let outData = [];
-function setData(i, j, data) {
-    outData.push(i);
-    outData.push(j);
-    outData.push(data);
+    xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
+    xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
+    xhttp.send(JSON.stringify(req));
 }
 
 // обновление данных по таймеру
@@ -116,15 +138,23 @@ let timetId = setInterval(function(){
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             console.log("данные приняты по таймеру");
-            inData = this.responseText;
+            inData = this.response;
             console.log(inData);
+            setResponseData(inData);
         }
     }
-
-    //let formData = new FormData();
-    //formData.append("name", source_game);
-    xhttp.open("POST", "http://127.0.0.1:3000/", true);
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    let = body = "name" + encodeURIComponent(source_game);
-    xhttp.send(body);
+    xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
+    xhttp.responseType = 'json';
+    xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
+    xhttp.send(JSON.stringify(req));
 }, 10000);
+
+function setResponseData(data){
+    let id = String(data.i1) + String(data.j1);
+    document.getElementById(id).innerHTML = data.val1;
+    id = String(data.i2) + String(data.j2);
+    document.getElementById(id).innerHTML = data.val2;
+    id = String(data.i3) + String(data.j3);
+    document.getElementById(id).innerHTML = data.val3;
+
+}
