@@ -5,17 +5,23 @@ let bodyParser = require("body-parser");
 //let util = require("util");
 
 let urlencodedParser = bodyParser.urlencoded({extended: true});
-let clc = 0;
+let clc1 = 0;
+let clientCount = 0;
 
 app.get('/index.html', function (req, res) {
     res.sendFile(__dirname + '/client/index.html');
     console.log("in index.html");
-    console.log(clc);
-    clc++;
+    console.log(clc1);
+    clc1++;
 });
 
 app.post('/index.html', urlencodedParser, function(req, res) {
-    return res.send(String(clc));
+    return res.send(String(clc1));
+});
+
+app.post('/game1.html', urlencodedParser, function(req, res) {
+    clientCount++;
+    return res.send(String(clientCount));
 });
 
 app.get('/game.html', function (req, res) {
@@ -36,11 +42,25 @@ app.listen(3000, function () {
 
 // прием, обработка и отправка данных
 
+
+let request = {
+    i1: -1,
+    j1: -1,
+    val1: "X",
+    i2: -1,
+    j2: -1,
+    val2: "X",
+    i3: -1,
+    j3: -1,
+    val3: "X",
+    move: -1
+};
+
 let move = 1;
-let request;
 let data;
 app.post('/game.html', urlencodedParser, function(req, res) {
     data = req.body;
+    console.log(data.move);
     if (move === data.move){
         request = data;
         if (move === 1)
@@ -48,6 +68,6 @@ app.post('/game.html', urlencodedParser, function(req, res) {
         else if (move === 2)
             move = 1;
     }
-    console.log(request);
+    //console.log(request);
     return res.json(request);
 });
