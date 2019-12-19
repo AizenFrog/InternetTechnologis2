@@ -2,7 +2,6 @@
 let express = require("express");
 let app = express();
 let bodyParser = require("body-parser");
-//let util = require("util");
 
 let urlencodedParser = bodyParser.urlencoded({extended: true});
 let clc1 = 0;
@@ -26,10 +25,7 @@ app.post('/game1.html', urlencodedParser, function(req, res) {
 
 app.get('/game.html', function (req, res) {
     res.sendFile(__dirname + '/client/game.html');
-    //res.redirect(__dirname + '/client/game.html');
-    //console.log(clc);
     console.log("in game.html");
-    //clc++;
 });
 
 app.use(express.static("client"));

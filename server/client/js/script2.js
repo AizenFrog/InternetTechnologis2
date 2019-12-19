@@ -60,7 +60,6 @@ let table = document.getElementById("tb");
 table.onclick = function(event) {
     if (moveCount == 0)
         return;
-    moveCount--;
     let td = event.target.closest('td');
     if (!td)
         return;
@@ -77,16 +76,34 @@ table.onclick = function(event) {
     else
         tapCount = 1;
     td.innerHTML = curr_act;
+    moveCount--;
 }
 
 // выбор текущего действия
 let curr_act = " ";
-document.getElementById('1').addEventListener("click", function(){curr_act = 'X';});
-document.getElementById('2').addEventListener("click", function(){curr_act = 'O';});
-document.getElementById('3').addEventListener("click", function(){curr_act = '*';});
-document.getElementById('4').addEventListener("click", function(){curr_act = '%';});
+document.getElementById('1').addEventListener("click", function(){
+    curr_act = 'X'; 
+    this.style.backgroundColor = "blue";
+    document.getElementById('3').style.backgroundColor = "red";
+});
+document.getElementById('2').addEventListener("click", function(){
+    curr_act = 'O'; 
+    this.style.backgroundColor = "blue";
+    document.getElementById('4').style.backgroundColor = "red";
+});
+document.getElementById('3').addEventListener("click", function(){
+    curr_act = '*'; 
+    this.style.backgroundColor = "blue";
+    document.getElementById('1').style.backgroundColor = "red";
+});
+document.getElementById('4').addEventListener("click", function(){
+    curr_act = '%'; 
+    this.style.backgroundColor = "blue";
+    document.getElementById('2').style.backgroundColor = "red";
+});
 
 // механика игры
+
 tapCount = 1;
 function canSetPoint(i, j) {
     let isTrue = false;
@@ -114,13 +131,31 @@ function canSetPoint(i, j) {
                     continue;
                 if (k < 0 || c < 0 || k > 9 || c > 9)
                     continue;
-                if ((document.getElementById(String(k) + String(c)).innerHTML == "*" && curr_act == "*" ||
-                    document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "%") ||
-                    (document.getElementById(String(k) + String(c)).innerHTML == "X" && curr_act == "*" ||
-                    document.getElementById(String(k) + String(c)).innerHTML == "O" && curr_act == "%")) {
-                        isTrue = true;
-                        break;
+                if (document.getElementById(String(k) + String(c)).innerHTML == "X" && curr_act == "%" ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "O" && curr_act == "*") {
+                    isTrue = true;
+                    break;
+                } else if (document.getElementById(String(k) + String(c)).innerHTML == "*" && curr_act == "*" ||
+                document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "%")
+                    canSetPoint(k, c);
+            }
+        }
+    }
+    if (source_game[i][j] == "*" && curr_act == "*" || source_game[i][j] == "%" && curr_act == "%"){
+        for (let k = i - 1; k <= i + 1; k++) {
+            for (let c = j - 1; c <= j + 1; c++) {
+                if (k == i && c == j)
+                    continue;
+                if (k < 0 || c < 0 || k > 9 || c > 9)
+                    continue;
+                if (document.getElementById(String(k) + String(c)).innerHTML == "X" && curr_act == "%" ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "O" && curr_act == "*"){
+                    isTrue = true;
+                    break;
                 }
+                if (document.getElementById(String(k) + String(c)).innerHTML == "*" && curr_act == "*" ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "%")
+                    canSetPoint(k, c);
             }
         }
     }
@@ -179,7 +214,7 @@ let timetId = setInterval(function(){
         xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
         xhttp.responseType = 'json';
         xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
-        xhttp.send(/*JSON.stringify(req)*/);
+        xhttp.send();
     }
 }, 10000);
 
@@ -188,16 +223,19 @@ function setResponseData(data){
     let id = String(data.i1) + String(data.j1);
     if (id != "-1-1"){
         document.getElementById(id).innerHTML = data.val1;
+        source_game[Number(id[0])][Number(id[1])] = data.val1;
         countIsTr++;
     }
     id = String(data.i2) + String(data.j2);
     if (id != "-1-1"){
         document.getElementById(id).innerHTML = data.val2;
+        source_game[Number(id[0])][Number(id[1])] = data.val2;
         countIsTr++;
     }
     id = String(data.i3) + String(data.j3);
     if (id != "-1-1"){
         document.getElementById(id).innerHTML = data.val3;
+        source_game[Number(id[0])][Number(id[1])] = data.val3;
         countIsTr++;
     }
     if (countIsTr >= 2 && clientNumber != data.move)
