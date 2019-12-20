@@ -143,7 +143,7 @@ function canSetPoint(i, j) {
                 }
             }
         }
-        return isTrue;
+        return false;
     }
     if ((source_game[i][j] == "X" && curr_act == "%") || (source_game[i][j] == "O" && curr_act == "*")){
         for (let k = i - 1; k <= i + 1; k++) {
@@ -205,21 +205,6 @@ function canSetPoint(i, j) {
 
 
 function canSetPointRec(i, j, _i, _j) {
-    if (source_game[i][j] == " " && curr_act != "*" && curr_act != "%") {
-        for (let k = i - 1; k <= i + 1; k++) {
-            for (let c = j - 1; c <= j + 1; c++) {
-                if (k == i && c == j)
-                    continue;
-                if (k < 0 || c < 0 || k > 9 || c > 9)
-                    continue;
-                if (document.getElementById(String(k) + String(c)).innerHTML == curr_act ||
-                    document.getElementById(String(k) + String(c)).innerHTML == "*" && curr_act == "X" ||
-                    document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "O") {
-                    return true;
-                }
-            }
-        }
-    }
     if ((source_game[i][j] == "X" && curr_act == "%") || (source_game[i][j] == "O" && curr_act == "*")) {
         for (let k = i - 1; k <= i + 1; k++) {
             for (let c = j - 1; c <= j + 1; c++) {
@@ -328,21 +313,85 @@ function skipAct() {
             console.log("данные отправлены");
         }
     }
-    if (req.val1)
+    if (req.val1 != 'Z') {
+        id = String(req.i1) + String(req.j1);
+        document.getElementById(id).innerHTML = req.val1;
+        switch (req.val1){
+            case 'O':
+                source_game[Number(id[0])][Number(id[1])] = ' ';
+                document.getElementById(id).innerHTML = ' ';
+                break;
+            case 'X':
+                source_game[Number(id[0])][Number(id[1])] = ' ';
+                document.getElementById(id).innerHTML = ' ';
+                break;
+            case '*':
+                source_game[Number(id[0])][Number(id[1])] = 'O';
+                document.getElementById(id).innerHTML = 'O';
+                break;
+            case '%':
+                source_game[Number(id[0])][Number(id[1])] = 'X';
+                document.getElementById(id).innerHTML = 'X';
+                break;
+        }
+    }
+    if (req.val2 != 'Z') {
+        id = String(req.i2) + String(req.j2);
+        switch (req.val2) {
+            case 'O':
+                source_game[Number(id[0])][Number(id[1])] = ' ';
+                document.getElementById(id).innerHTML = ' ';
+                break;
+            case 'X':
+                source_game[Number(id[0])][Number(id[1])] = ' ';
+                document.getElementById(id).innerHTML = ' ';
+                break;
+            case '*':
+                source_game[Number(id[0])][Number(id[1])] = 'O';
+                document.getElementById(id).innerHTML = 'O';
+                break;
+            case '%':
+                source_game[Number(id[0])][Number(id[1])] = 'X';
+                document.getElementById(id).innerHTML = 'X';
+                break;
+        }
+    }
+    if (req.val3 != 'Z') {
+        id = String(req.i3) + String(req.j3);
+        document.getElementById(id).innerHTML = req.val3;
+        switch (req.val3) {
+            case 'O':
+                source_game[Number(id[0])][Number(id[1])] = ' ';
+                document.getElementById(id).innerHTML = ' ';
+                break;
+            case 'X':
+                source_game[Number(id[0])][Number(id[1])] = ' ';
+                document.getElementById(id).innerHTML = ' ';
+                break;
+            case '*':
+                source_game[Number(id[0])][Number(id[1])] = 'O';
+                document.getElementById(id).innerHTML = 'O';
+                break;
+            case '%':
+                source_game[Number(id[0])][Number(id[1])] = 'X';
+                document.getElementById(id).innerHTML = 'X';
+                break;
+        }
+    }
     req.alvX = aliveX;
     req.alvO = aliveO;
     req.val1 = 'Z';
     xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
     xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
     xhttp.send(JSON.stringify(req));
+    isMyMove = false;
+    document.getElementById("yourMove").innerHTML = "Ход противника";    
 }
 
 let skip_act = document.getElementById("skip_act");
 skip_act.onclick = function (event) {
     if (isMyMove == true)
         skipAct();
-    isMyMove = false;
-    
 }
 
 // обновление данных по таймеру
@@ -355,8 +404,7 @@ let timetId = setInterval(function(){
                 console.log("данные приняты по таймеру");
                 inData = this.response;
                 console.log(inData);
-                if(inData.val1 != 'Z')
-                    setResponseData(inData);
+                setResponseData(inData);
                 req.val1 = 'Z';
                 req.val2 = 'Z';
                 req.val3 = 'Z';
@@ -371,27 +419,30 @@ let timetId = setInterval(function(){
 
 function setResponseData(data){
     let countIsTr = 0;
-    let id = String(data.i1) + String(data.j1);
-    if (id != "-1-1"){
-        document.getElementById(id).innerHTML = data.val1;
-        source_game[Number(id[0])][Number(id[1])] = data.val1;
-        countIsTr++;
-    }
-    id = String(data.i2) + String(data.j2);
-    if (id != "-1-1"){
-        document.getElementById(id).innerHTML = data.val2;
-        source_game[Number(id[0])][Number(id[1])] = data.val2;
-        countIsTr++;
-    }
-    id = String(data.i3) + String(data.j3);
-    if (id != "-1-1"){
-        document.getElementById(id).innerHTML = data.val3;
-        source_game[Number(id[0])][Number(id[1])] = data.val3;
-        countIsTr++;
-    }
-<<<<<<< HEAD
+    if (inData.val1 != 'Z') {
+        let id = String(data.i1) + String(data.j1);
+        if (id != "-1-1") {
+            document.getElementById(id).innerHTML = data.val1;
+            source_game[Number(id[0])][Number(id[1])] = data.val1;
+            countIsTr++;
+        }
+        id = String(data.i2) + String(data.j2);
+        if (id != "-1-1") {
+            document.getElementById(id).innerHTML = data.val2;
+            source_game[Number(id[0])][Number(id[1])] = data.val2;
+            countIsTr++;
+        }
+        id = String(data.i3) + String(data.j3);
+        if (id != "-1-1") {
+            document.getElementById(id).innerHTML = data.val3;
+            source_game[Number(id[0])][Number(id[1])] = data.val3;
+            countIsTr++;
+        }
+    } else countIsTr = 3;
     if (countIsTr >= 2 && clientNumber != data.move){
         isMyMove = true;
+        aliveX = data.alvX
+        aliveO = data.alvO
         document.getElementById("yourMove").innerHTML = "Твой ход";
     }
 }
@@ -416,11 +467,3 @@ window.onbeforeunload = function(){
 document.getElementById("give_up").onclick = function(event){
 
 };
-=======
-    if (countIsTr >= 2 && clientNumber != data.move) {
-        aliveX = data.alvX
-        aliveO = data.alvO
-        isMyMove = true;
-    }
-}
->>>>>>> 342bba92f117aca2eb9481423d6fa68813089225
