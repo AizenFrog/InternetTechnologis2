@@ -389,9 +389,10 @@ function setResponseData(data){
         source_game[Number(id[0])][Number(id[1])] = data.val3;
         countIsTr++;
     }
-<<<<<<< HEAD
     if (countIsTr >= 2 && clientNumber != data.move){
         isMyMove = true;
+        aliveX = data.alvX
+        aliveO = data.alvO
         document.getElementById("yourMove").innerHTML = "Твой ход";
     }
 }
@@ -413,14 +414,41 @@ window.onbeforeunload = function(){
 }
 
 // завершение игры
-document.getElementById("give_up").onclick = function(event){
 
-};
-=======
-    if (countIsTr >= 2 && clientNumber != data.move) {
-        aliveX = data.alvX
-        aliveO = data.alvO
-        isMyMove = true;
+function transition(){
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            document.write(this.response);
+        }
     }
+    xhttp.open("GET", "http://127.0.0.1:3000/gameover", true);
+    xhttp.responseType = "text";
+    xhttp.send();
 }
->>>>>>> 342bba92f117aca2eb9481423d6fa68813089225
+
+let time = setInterval(function(){
+    if (isMyMove == false){
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log("данные приняты, игра продолжается");
+                if (this.response == "no"){
+                    confirm("Вы выйграли!");
+                    transition();
+                }
+            }
+        }
+        xhttp.open("POST", "http://127.0.0.1:3000/gameover", true);
+        xhttp.responseType = 'text';
+        xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
+        xhttp.send(JSON.stringify({client: clientNumber}));
+    }
+}, 3000);
+
+
+document.getElementById("give_up").onclick = function(event){
+    confirm("Вы проиграли");
+    transition();
+};
+

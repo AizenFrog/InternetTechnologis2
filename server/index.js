@@ -64,7 +64,6 @@ app.post('/game.html', urlencodedParser, function(req, res) {
         else if (move === 2)
             move = 1;
     }
-    //console.log(request);
     return res.json(request);
 });
 
@@ -72,4 +71,14 @@ app.post('/game.html', urlencodedParser, function(req, res) {
 app.post("/check", urlencodedParser, function(req, res){
     clientCount--;
     console.log(clientCount);
+});
+
+app.get("/gameover", urlencodedParser, function(req, res){
+    res.sendFile(__dirname + '/client/index.html');
+    clientCount--;
+});
+
+app.post("/gameover", urlencodedParser, function(req, res){
+    if (clientCount == 1)
+        res.send("no");
 });
