@@ -95,9 +95,11 @@ table.onclick = function(event) {
         aliveO--;
     if (curr_act == '%')
         aliveX--;
-    // if (aliveX == 0)
+    if (aliveX == 0)
+        console.log("O wins!!!");
         // allert O wins!!!!
-    // if (aliveY == 0)
+    if (aliveO == 0)
+        console.log("X wins!!!");
         // allert Y wins!!!!
     moveCount--;
 }
