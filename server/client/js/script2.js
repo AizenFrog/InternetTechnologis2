@@ -2,6 +2,9 @@
 let moveCount = 2;
 let clientNumber;
 let isMyMove;
+// let gameOver;
+let aliveX = 1;
+let aliveO = 1;
 let source_game = [];
 for (let i = 0; i < 10; i++){
     source_game[i] = [];
@@ -30,6 +33,8 @@ start.addEventListener("click", function(){
                 i3: -1,
                 j3: -1,
                 val3: "X",
+                alvX: 1,
+                alvO: 1,
                 move: clientNumber
             };
             if(clientNumber == 1){
@@ -76,6 +81,18 @@ table.onclick = function(event) {
     else
         tapCount = 1;
     td.innerHTML = curr_act;
+    if (curr_act == 'X')
+        aliveX++;
+    if (curr_act == 'O')
+        aliveO++;
+    if (curr_act == '*')
+        aliveO--;
+    if (curr_act == '%')
+        aliveX--;
+    // if (aliveX == 0)
+        // allert O wins!!!!
+    // if (aliveY == 0)
+        // allert Y wins!!!!
     moveCount--;
 }
 
@@ -106,7 +123,6 @@ document.getElementById('4').addEventListener("click", function(){
 
 tapCount = 1;
 function canSetPoint(i, j) {
-    let isTrue = false;
     if (source_game[i][j] == " " && curr_act != "*" && curr_act != "%") {
         for (let k = i - 1; k <= i + 1; k++) {
             for (let c = j - 1; c <= j + 1; c++) {
@@ -117,8 +133,7 @@ function canSetPoint(i, j) {
                 if (document.getElementById(String(k) + String(c)).innerHTML == curr_act || 
                     document.getElementById(String(k) + String(c)).innerHTML == "*" && curr_act == "X" ||
                     document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "O") {
-                    isTrue = true;
-                    break;
+                    return true;
                 }
             }
         }
@@ -131,13 +146,24 @@ function canSetPoint(i, j) {
                     continue;
                 if (k < 0 || c < 0 || k > 9 || c > 9)
                     continue;
-                if (document.getElementById(String(k) + String(c)).innerHTML == "X" && curr_act == "%" ||
-                    document.getElementById(String(k) + String(c)).innerHTML == "O" && curr_act == "*") {
-                    isTrue = true;
-                    break;
-                } else if (document.getElementById(String(k) + String(c)).innerHTML == "*" && curr_act == "*" ||
-                document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "%")
-                    canSetPoint(k, c);
+                if (document.getElementById(String(k) + String(c)).innerHTML == "O" && curr_act == "%" ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "X" && curr_act == "*") {
+                    return true;
+                }
+                
+            }
+        }
+        for (let k = i - 1; k <= i + 1; k++) {
+            for (let c = j - 1; c <= j + 1; c++) {
+                if (k == i && c == j)
+                    continue;
+                if (k < 0 || c < 0 || k > 9 || c > 9)
+                    continue;
+                if (document.getElementById(String(k) + String(c)).innerHTML == "*" && curr_act == "*" ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "%") {
+                    if(canSetPointRec(k, c, i, j))
+                        return true;
+                }
             }
         }
     }
@@ -148,18 +174,102 @@ function canSetPoint(i, j) {
                     continue;
                 if (k < 0 || c < 0 || k > 9 || c > 9)
                     continue;
-                if (document.getElementById(String(k) + String(c)).innerHTML == "X" && curr_act == "%" ||
-                    document.getElementById(String(k) + String(c)).innerHTML == "O" && curr_act == "*"){
-                    isTrue = true;
-                    break;
+                if (document.getElementById(String(k) + String(c)).innerHTML == "O" && curr_act == "%" ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "X" && curr_act == "*"){
+                    return true;
                 }
+            }
+        }
+        for (let k = i - 1; k <= i + 1; k++) {
+            for (let c = j - 1; c <= j + 1; c++) {
+                if (k == i && c == j)
+                    continue;
+                if (k < 0 || c < 0 || k > 9 || c > 9)
+                    continue;
                 if (document.getElementById(String(k) + String(c)).innerHTML == "*" && curr_act == "*" ||
-                    document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "%")
-                    canSetPoint(k, c);
+                    document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "%") {
+                    if (canSetPointRec(k, c, i, j))
+                        return true;
+                }
             }
         }
     }
-    return isTrue;
+    return false;
+}
+
+
+function canSetPointRec(i, j, _i, _j) {
+    if (source_game[i][j] == " " && curr_act != "*" && curr_act != "%") {
+        for (let k = i - 1; k <= i + 1; k++) {
+            for (let c = j - 1; c <= j + 1; c++) {
+                if (k == i && c == j)
+                    continue;
+                if (k < 0 || c < 0 || k > 9 || c > 9)
+                    continue;
+                if (document.getElementById(String(k) + String(c)).innerHTML == curr_act ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "*" && curr_act == "X" ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "O") {
+                    return true;
+                }
+            }
+        }
+    }
+    if ((source_game[i][j] == "X" && curr_act == "%") || (source_game[i][j] == "O" && curr_act == "*")) {
+        for (let k = i - 1; k <= i + 1; k++) {
+            for (let c = j - 1; c <= j + 1; c++) {
+                if ((k == i && c == j) || (k == _i && c == _j))
+                    continue;
+                if (k < 0 || c < 0 || k > 9 || c > 9)
+                    continue;
+                if (document.getElementById(String(k) + String(c)).innerHTML == "O" && curr_act == "%" ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "X" && curr_act == "*") {
+                    return true;
+                }
+
+            }
+        }
+        for (let k = i - 1; k <= i + 1; k++) {
+            for (let c = j - 1; c <= j + 1; c++) {
+                if ((k == i && c == j) || (k == _i && c == _j))
+                    continue;
+                if (k < 0 || c < 0 || k > 9 || c > 9)
+                    continue;
+                if (document.getElementById(String(k) + String(c)).innerHTML == "*" && curr_act == "*" ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "%") {
+                    if (canSetPointRec(k, c, i, j))
+                        return true;
+                }
+            }
+        }
+    }
+    if (source_game[i][j] == "*" && curr_act == "*" || source_game[i][j] == "%" && curr_act == "%") {
+        for (let k = i - 1; k <= i + 1; k++) {
+            for (let c = j - 1; c <= j + 1; c++) {
+                if ((k == i && c == j) || (k == _i && c == _j))
+                    continue;
+                if (k < 0 || c < 0 || k > 9 || c > 9)
+                    continue;
+                if (document.getElementById(String(k) + String(c)).innerHTML == "O" && curr_act == "%" ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "X" && curr_act == "*") {
+                    return true;
+                }
+            }
+        }
+        for (let k = i - 1; k <= i + 1; k++) {
+            for (let c = j - 1; c <= j + 1; c++) {
+                if ((k == i && c == j) || (k == _i && c == _j))
+                    continue;
+                if (k < 0 || c < 0 || k > 9 || c > 9)
+                    continue;
+                if (document.getElementById(String(k) + String(c)).innerHTML == "*" && curr_act == "*" ||
+                    document.getElementById(String(k) + String(c)).innerHTML == "%" && curr_act == "%") {
+                    if (canSetPointRec(k, c, i, j))
+                        return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 // отправка измененных даннх
@@ -183,19 +293,49 @@ function reqForm(count, i, j, val){
 
 let next_act = document.getElementById("next_act");
 next_act.onclick = function(event) {
-    if (isMyMove == true){
-        moveCount = 3;
-        let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                console.log("данные отправлены");
+    if (isMyMove == true) {
+        if (moveCount != 0)
+            skipAct();
+        else {
+            moveCount = 3;
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log("данные отправлены");
+                }
             }
+            xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
+            xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
+            req.alvX = aliveX;
+            req.alvO = aliveO;
+            xhttp.send(JSON.stringify(req));
         }
-        xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
-        xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
-        xhttp.send(JSON.stringify(req));
     }
     isMyMove = false;
+}
+
+function skipAct() {
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log("данные отправлены");
+        }
+    }
+    if (req.val1)
+    req.alvX = aliveX;
+    req.alvO = aliveO;
+    req.val1 = 'Z';
+    xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
+    xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
+    xhttp.send(JSON.stringify(req));
+}
+
+let skip_act = document.getElementById("skip_act");
+skip_act.onclick = function (event) {
+    if (isMyMove == true)
+        skipAct();
+    isMyMove = false;
+    
 }
 
 // обновление данных по таймеру
@@ -208,7 +348,11 @@ let timetId = setInterval(function(){
                 console.log("данные приняты по таймеру");
                 inData = this.response;
                 console.log(inData);
-                setResponseData(inData);
+                if(inData.val1 != 'Z')
+                    setResponseData(inData);
+                req.val1 = 'Z';
+                req.val2 = 'Z';
+                req.val3 = 'Z';
             }
         }
         xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
@@ -216,7 +360,7 @@ let timetId = setInterval(function(){
         xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
         xhttp.send();
     }
-}, 10000);
+}, 3000);
 
 function setResponseData(data){
     let countIsTr = 0;
@@ -238,6 +382,9 @@ function setResponseData(data){
         source_game[Number(id[0])][Number(id[1])] = data.val3;
         countIsTr++;
     }
-    if (countIsTr >= 2 && clientNumber != data.move)
+    if (countIsTr >= 2 && clientNumber != data.move) {
+        aliveX = data.alvX
+        aliveO = data.alvO
         isMyMove = true;
+    }
 }
