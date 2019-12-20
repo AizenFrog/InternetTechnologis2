@@ -68,7 +68,7 @@ button{
 }
 
 .game_field .buttons .game_options, .next_action{
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: space-around;
 }
@@ -87,4 +87,13 @@ button{
 .game_field .buttons{
     display: flex;
     justify-content: space-between;
+}
+
+.yourMove{
+    display: none;
+    margin-top: 15px;
+    text-align: center;
+    font-size: 20px;
+    color: green;
+    font-weight: 600;
 }

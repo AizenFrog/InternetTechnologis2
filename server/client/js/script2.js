@@ -33,12 +33,18 @@ start.addEventListener("click", function(){
                 move: clientNumber
             };
             if(clientNumber == 1){
+                document.getElementById("yourMove").style.display = "block";
                 document.getElementById("2").style.display = 'none';
                 document.getElementById("4").style.display = 'none';
             } else if (clientNumber == 2){
+                document.getElementById("yourMove").style.display = "block";
+                document.getElementById("yourMove").innerHTML = "Ход противника";
                 document.getElementById("1").style.display = 'none';
                 document.getElementById("3").style.display = 'none';
             }
+            start.style.display = "none";
+            document.getElementById("game_options").style.display = "flex";
+            document.getElementById("next_action").style.display = "flex";
         }
     }
     xhttp.open("POST", "http://127.0.0.1:3000/game1.html", true);
@@ -196,6 +202,7 @@ next_act.onclick = function(event) {
         xhttp.send(JSON.stringify(req));
     }
     isMyMove = false;
+    document.getElementById("yourMove").innerHTML = "Ход противника";
 }
 
 // обновление данных по таймеру
@@ -238,6 +245,29 @@ function setResponseData(data){
         source_game[Number(id[0])][Number(id[1])] = data.val3;
         countIsTr++;
     }
-    if (countIsTr >= 2 && clientNumber != data.move)
+    if (countIsTr >= 2 && clientNumber != data.move){
         isMyMove = true;
+        document.getElementById("yourMove").innerHTML = "Твой ход";
+    }
 }
+
+// проверка на выход игрока
+window.onbeforeunload = function(){
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log("проверка на выход");
+            if (this.response.isOk == false)
+                console.log("противник вышел");
+        }
+    }
+    xhttp.open("POST", "http://127.0.0.1:3000/check", true);
+    xhttp.responseType = 'json';
+    xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
+    xhttp.send(JSON.stringify({client: clientNumber}));
+}
+
+// завершение игры
+document.getElementById("give_up").onclick = function(event){
+
+};

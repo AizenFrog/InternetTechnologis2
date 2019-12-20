@@ -67,3 +67,9 @@ app.post('/game.html', urlencodedParser, function(req, res) {
     //console.log(request);
     return res.json(request);
 });
+
+
+app.post("/check", urlencodedParser, function(req, res){
+    clientCount--;
+    console.log(clientCount);
+});

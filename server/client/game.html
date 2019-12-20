@@ -9,6 +9,7 @@
 </head>
 <body>
     <button id="start">Старт!</button>
+    <div id="yourMove" class="yourMove">Твой ход</div>
     <section class="game_field">
         <div class="field">
             <table id="tb">
@@ -47,14 +48,15 @@
             </table>
         </div>
         <div class="buttons">
-            <div class="game_options">
+            <div class="game_options" id="game_options">
                 <button id="1">X</button>
                 <button id="2">O</button>
                 <button id="3">*</button>
                 <button id="4">%</button>
             </div>
-            <div class="next_action">
+            <div class="next_action" id="next_action">
                 <button id="next_act">Сделать ход</button>
+                <button id="give_up">Сдаться</button>
                 <button id="skip_act">Пропустить ход</button>
             </div>
         </div>
