@@ -2,10 +2,13 @@
 let express = require("express");
 let app = express();
 let bodyParser = require("body-parser");
+let MongoClient = require("mongod").MongoClient;
 
 let urlencodedParser = bodyParser.urlencoded({extended: true});
 let clc1 = 0;
 let clientCount = 0;
+let clientOut = false;
+let dburl = "mongodb://localhost:27017/gamesCollection";
 
 app.get('/index.html', function (req, res) {
     res.sendFile(__dirname + '/client/index.html');
@@ -49,7 +52,10 @@ let request = {
     i3: -1,
     j3: -1,
     val3: "X",
-    move: -1
+    move: -1,
+    alvX: 1,
+    alvO: 1,
+    isDisconnect: false
 };
 
 let move = 1;
@@ -57,7 +63,11 @@ let data;
 app.post('/game.html', urlencodedParser, function(req, res) {
     data = req.body;
     console.log(data.move);
-    if (move === data.move){
+    if (clientOut == true){
+        request.isDisconnect = true;
+        return res.json(request);
+    }
+    if (move === data.move && clientOut == false){
         request = data;
         if (move === 1)
             move = 2;
@@ -70,15 +80,17 @@ app.post('/game.html', urlencodedParser, function(req, res) {
 
 app.post("/check", urlencodedParser, function(req, res){
     clientCount--;
+    clientOut = true;
     console.log(clientCount);
 });
 
 app.get("/gameover", urlencodedParser, function(req, res){
-    res.sendFile(__dirname + '/client/index.html');
+    clientOut = true;
     clientCount--;
+    res.sendFile(__dirname + '/client/index.html');
 });
 
 app.post("/gameover", urlencodedParser, function(req, res){
-    if (clientCount == 1)
+    if (clientOut == true)
         res.send("no");
 });

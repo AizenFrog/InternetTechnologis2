@@ -2,6 +2,8 @@
 let moveCount = 2;
 let clientNumber;
 let isMyMove;
+let dateStart;
+let dateEnd;
 // let gameOver;
 let aliveX = 1;
 let aliveO = 1;
@@ -18,6 +20,7 @@ for (let i = 0; i < 10; i++){
 // начало игры
 let start = document.getElementById("start");
 start.addEventListener("click", function(){
+    dateStart = new Date();
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -35,7 +38,9 @@ start.addEventListener("click", function(){
                 val3: "X",
                 alvX: 1,
                 alvO: 1,
-                move: clientNumber
+                move: clientNumber,
+                isDisconnect: false,
+                some: false
             };
             if(clientNumber == 1){
                 document.getElementById("yourMove").style.display = "block";
@@ -95,12 +100,20 @@ table.onclick = function(event) {
         aliveO--;
     if (curr_act == '%')
         aliveX--;
-    if (aliveX == 0)
+    if (aliveX == 0){
         console.log("O wins!!!");
         // allert O wins!!!!
-    if (aliveO == 0)
+        confirm("Вы выйграли");
+        req.isDisconnect = true;
+        transition();
+    }
+    if (aliveO == 0){
         console.log("X wins!!!");
         // allert Y wins!!!!
+        confirm("Вы проиграли");
+        req.isDisconnect = true;
+        transition();
+    }
     moveCount--;
 }
 
@@ -265,7 +278,7 @@ function canSetPointRec(i, j, _i, _j) {
     return false;
 }
 
-// отправка измененных даннх
+// отправка измененных данных
 
 let req;
 function reqForm(count, i, j, val){
@@ -309,12 +322,6 @@ next_act.onclick = function(event) {
 }
 
 function skipAct() {
-    let xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            console.log("данные отправлены");
-        }
-    }
     if (req.val1 != 'Z') {
         id = String(req.i1) + String(req.j1);
         document.getElementById(id).innerHTML = req.val1;
@@ -322,18 +329,22 @@ function skipAct() {
             case 'O':
                 source_game[Number(id[0])][Number(id[1])] = ' ';
                 document.getElementById(id).innerHTML = ' ';
+                aliveO--;
                 break;
             case 'X':
                 source_game[Number(id[0])][Number(id[1])] = ' ';
                 document.getElementById(id).innerHTML = ' ';
+                aliveX--;
                 break;
             case '*':
                 source_game[Number(id[0])][Number(id[1])] = 'O';
                 document.getElementById(id).innerHTML = 'O';
+                aliveO++;
                 break;
             case '%':
                 source_game[Number(id[0])][Number(id[1])] = 'X';
                 document.getElementById(id).innerHTML = 'X';
+                aliveX++;
                 break;
         }
     }
@@ -343,18 +354,22 @@ function skipAct() {
             case 'O':
                 source_game[Number(id[0])][Number(id[1])] = ' ';
                 document.getElementById(id).innerHTML = ' ';
+                aliveO--;
                 break;
             case 'X':
                 source_game[Number(id[0])][Number(id[1])] = ' ';
                 document.getElementById(id).innerHTML = ' ';
+                aliveX--;
                 break;
             case '*':
                 source_game[Number(id[0])][Number(id[1])] = 'O';
                 document.getElementById(id).innerHTML = 'O';
+                aliveO++;
                 break;
             case '%':
                 source_game[Number(id[0])][Number(id[1])] = 'X';
                 document.getElementById(id).innerHTML = 'X';
+                aliveX++;
                 break;
         }
     }
@@ -365,35 +380,46 @@ function skipAct() {
             case 'O':
                 source_game[Number(id[0])][Number(id[1])] = ' ';
                 document.getElementById(id).innerHTML = ' ';
+                aliveO--;
                 break;
             case 'X':
                 source_game[Number(id[0])][Number(id[1])] = ' ';
                 document.getElementById(id).innerHTML = ' ';
+                aliveX--;
                 break;
             case '*':
                 source_game[Number(id[0])][Number(id[1])] = 'O';
                 document.getElementById(id).innerHTML = 'O';
+                aliveO++;
                 break;
             case '%':
                 source_game[Number(id[0])][Number(id[1])] = 'X';
                 document.getElementById(id).innerHTML = 'X';
+                aliveX++;
                 break;
         }
     }
     req.alvX = aliveX;
     req.alvO = aliveO;
-    req.val1 = 'Z';
-    xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
-    xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
-    xhttp.send(JSON.stringify(req));
+    req.some = true;
     isMyMove = false;
     document.getElementById("yourMove").innerHTML = "Ход противника";    
 }
 
 let skip_act = document.getElementById("skip_act");
 skip_act.onclick = function (event) {
-    if (isMyMove == true)
+    if (isMyMove == true){
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log("данные отправлены");
+            }
+        }
         skipAct();
+        xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
+        xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
+        xhttp.send(JSON.stringify(req));
+    }
 }
 
 // обновление данных по таймеру
@@ -410,6 +436,8 @@ let timetId = setInterval(function(){
                 req.val1 = 'Z';
                 req.val2 = 'Z';
                 req.val3 = 'Z';
+                if (inData.isDisconnect == true)
+                    transition();
             }
         }
         xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
@@ -421,7 +449,7 @@ let timetId = setInterval(function(){
 
 function setResponseData(data){
     let countIsTr = 0;
-    if (inData.val1 != 'Z') {
+    if (inData.some != true) {
         let id = String(data.i1) + String(data.j1);
         if (id != "-1-1") {
             document.getElementById(id).innerHTML = data.val1;
@@ -468,6 +496,9 @@ window.onbeforeunload = function(){
 // завершение игры
 
 function transition(){
+    dateEnd = Date();
+    console.log(dateEnd - dateStart);
+    console.log(JSON.stringify(dateEnd));
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -479,27 +510,8 @@ function transition(){
     xhttp.send();
 }
 
-let time = setInterval(function(){
-    if (isMyMove == false){
-        let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                console.log("данные приняты, игра продолжается");
-                if (this.response == "no"){
-                    confirm("Вы выйграли!");
-                    transition();
-                }
-            }
-        }
-        xhttp.open("POST", "http://127.0.0.1:3000/gameover", true);
-        xhttp.responseType = 'text';
-        xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
-        xhttp.send(JSON.stringify({client: clientNumber}));
-    }
-}, 3000);
-
-
 document.getElementById("give_up").onclick = function(event){
     confirm("Вы проиграли");
+    req.isDisconnect = true;
     transition();
 };
