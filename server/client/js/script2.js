@@ -449,7 +449,7 @@ let timetId = setInterval(function(){
 
 function setResponseData(data){
     let countIsTr = 0;
-    if (inData.some != true) {
+    if (data.some != true) {
         let id = String(data.i1) + String(data.j1);
         if (id != "-1-1") {
             document.getElementById(id).innerHTML = data.val1;
@@ -496,8 +496,13 @@ window.onbeforeunload = function(){
 // завершение игры
 
 function transition(){
-    dateEnd = Date();
-    console.log(dateEnd - dateStart);
+    dateEnd = new Date();
+    console.log(dateEnd.getMinutes() - dateStart.getMinutes());
+    console.log(dateEnd.getSeconds() - dateStart.getSeconds())
+    let timeOfGame = {
+        minutes: dateEnd.getMinutes() - dateStart.getMinutes(),
+        seconds: dateEnd.getSeconds() - dateStart.getSeconds()
+    };
     console.log(JSON.stringify(dateEnd));
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
