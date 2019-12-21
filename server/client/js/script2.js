@@ -3,6 +3,7 @@ let moveCount = 2;
 let clientNumber;
 let isMyMove;
 let playerType;
+let winner;
 let dateStart;
 let dateEnd;
 // let gameOver;
@@ -109,6 +110,9 @@ table.onclick = function(event) {
         console.log("O wins!!!");
         // allert O wins!!!!
         confirm("Вы выйграли");
+        if (playerType == 1)
+            winner = 'X';
+        else winner = 'O';
         req.isDisconnect = true;
         transition();
     }
@@ -116,6 +120,9 @@ table.onclick = function(event) {
         console.log("X wins!!!");
         // allert Y wins!!!!
         confirm("Вы выйграли");
+        if (playerType == 1)
+            winner = 'X';
+        else winner = 'O';
         req.isDisconnect = true;
         transition();
     }
@@ -523,10 +530,23 @@ function transition(){
     xhttp.open("GET", "http://127.0.0.1:3000/gameover", true);
     xhttp.responseType = "text";
     xhttp.send();
+    xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log("данные отправлены");
+        }
+    }
+    xhttp.open("POST", "http://127.0.0.1:3000/insertdb", true);
+    xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
+    var send = { data: dateStart, gameLen: timeOfGame, win: winner };
+    xhttp.send(JSON.stringify(send));
 }
 
 document.getElementById("give_up").onclick = function(event){
     confirm("Вы проиграли");
     req.isDisconnect = true;
+    if (playerType == 1)
+        winner = 'O';
+    else winner = 'X';
     transition();
 };
