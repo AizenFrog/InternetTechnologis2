@@ -115,7 +115,7 @@ app.post("/insertdb", urlencodedParser, function (req, res) {
 });
 
 
-app.post("getFromDB", urlencodedParser, function(req, res){
+app.post("/getFromDB", urlencodedParser, function(req, res){
     MongoClient.connect(dburl, function (err, client) {
         let db = client.db(dbname);
         let collection = db.collection("games");

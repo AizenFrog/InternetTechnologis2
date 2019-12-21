@@ -555,3 +555,19 @@ document.getElementById("give_up").onclick = function(event){
     else winner = 'X';
     transition();
 };
+
+// предыдущие игры
+document.getElementById("prev_game").onclick = function(event){
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log("данные из бд");
+            console.log(this.response);
+            //document.getElementById("prev").innerHTML.
+        }
+    }
+    xhttp.open("POST", "http://127.0.0.1:3000/getFromDB", true);
+    xhttp.responseType = 'json';
+    xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
+    xhttp.send();
+}
