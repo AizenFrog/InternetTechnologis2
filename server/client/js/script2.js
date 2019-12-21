@@ -2,6 +2,7 @@
 let moveCount = 2;
 let clientNumber;
 let isMyMove;
+let playerType;
 let dateStart;
 let dateEnd;
 // let gameOver;
@@ -26,6 +27,10 @@ start.addEventListener("click", function(){
         if (this.readyState == 4 && this.status == 200) {
             clientNumber = Number(this.response);
             isMyMove = clientNumber == 1 ? true : false;
+            if (isMyMove)
+                playerType = 1;
+            else
+                playerType = 2;
             req = {
                 i1: -1,
                 j1: -1,
@@ -110,7 +115,7 @@ table.onclick = function(event) {
     if (aliveO == 0){
         console.log("X wins!!!");
         // allert Y wins!!!!
-        confirm("Вы проиграли");
+        confirm("Вы выйграли");
         req.isDisconnect = true;
         transition();
     }
@@ -300,8 +305,18 @@ function reqForm(count, i, j, val){
 let next_act = document.getElementById("next_act");
 next_act.onclick = function(event) {
     if (isMyMove == true) {
-        if (moveCount != 0)
+        if (moveCount != 0) {
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log("данные отправлены");
+                }
+            }
             skipAct();
+            xhttp.open("POST", "http://127.0.0.1:3000/game.html", true);
+            xhttp.setRequestHeader("Content-type", 'application/json; charset=utf-8');
+            xhttp.send(JSON.stringify(req));
+        }
         else {
             moveCount = 3;
             let xhttp = new XMLHttpRequest();
