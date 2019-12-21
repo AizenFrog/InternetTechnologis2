@@ -19,6 +19,8 @@ for (let i = 0; i < 10; i++){
     }
 }
 
+var send = { data: -1, gameLen: -1, win: -1 };
+
 // начало игры
 let start = document.getElementById("start");
 start.addEventListener("click", function(){
@@ -562,8 +564,13 @@ document.getElementById("prev_game").onclick = function(event){
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             console.log("данные из бд");
-            console.log(this.response);
-            //document.getElementById("prev").innerHTML.
+            let str = "";
+            this.response.forEach(element => {
+                str += element.data + " игра длилась " + element.gameLen.minutes +
+                    " минут " + element.gameLen.seconds + " секунд. Выиграл " + element.win + "<br/>";
+            });
+            document.getElementById("prev").innerHTML = str;
+
         }
     }
     xhttp.open("POST", "http://127.0.0.1:3000/getFromDB", true);

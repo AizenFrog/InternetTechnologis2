@@ -63,7 +63,6 @@ let move = 1;
 let data;
 app.post('/game.html', urlencodedParser, function(req, res) {
     data = req.body;
-    console.log(data.move);
     if (clientOut == true){
         request.isDisconnect = true;
         return res.json(request);
@@ -119,9 +118,11 @@ app.post("/getFromDB", urlencodedParser, function(req, res){
     MongoClient.connect(dburl, function (err, client) {
         let db = client.db(dbname);
         let collection = db.collection("games");
-
-        res = collection.find();
-        client.close();
-        return res;
+        res1 = collection.find().toArray(function (err, result) {
+            console.log(result);
+            res.json(result);
+            client.close();
+            return res
+        });
     });
 });
