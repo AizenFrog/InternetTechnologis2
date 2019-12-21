@@ -94,3 +94,31 @@ app.post("/gameover", urlencodedParser, function(req, res){
     if (clientOut == true)
         res.send("no");
 });
+
+app.post("/insertdb", urlencodedParser, function(req, res){
+    MongoClient.connect(dburl, function(err, db){
+        let collection = db.collection("games");
+
+        let games = req.body;
+
+        collection.insertOne(games, function(err, result){
+            if(err){
+                console.log(err);
+                return;
+            }
+            console.log(result.ops);
+            db.close();
+        });
+    });
+});
+
+
+app.post("getFromDB", urlencodedParser, function(req, res){
+    MongoClient.connect(dburl, function(err, db){
+        let collection = db.collection("games");
+
+        res = collection.find();
+        db.close();
+        return res;
+    });
+});
