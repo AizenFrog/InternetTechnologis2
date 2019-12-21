@@ -2,13 +2,14 @@
 let express = require("express");
 let app = express();
 let bodyParser = require("body-parser");
-let MongoClient = require("mongod").MongoClient;
+let MongoClient = require("mongodb").MongoClient;
 
 let urlencodedParser = bodyParser.urlencoded({extended: true});
 let clc1 = 0;
 let clientCount = 0;
 let clientOut = false;
-let dburl = "mongodb://localhost:27017/gamesCollection";
+let dburl = "mongodb://localhost:27018";
+let dbname = "gamesCollection"
 
 app.get('/index.html', function (req, res) {
     res.sendFile(__dirname + '/client/index.html');
@@ -95,9 +96,10 @@ app.post("/gameover", urlencodedParser, function(req, res){
         res.send("no");
 });
 
-app.post("/insertdb", urlencodedParser, function(req, res){
-    MongoClient.connect(dburl, function(err, db){
-        let collection = db.collection("games");
+app.post("/insertdb", urlencodedParser, function (req, res) {
+    MongoClient.connect(dburl, function (err, client) {
+        let db = client.db(dbname);
+        let collection = db.collection('games');
 
         let games = req.body;
 
@@ -107,18 +109,19 @@ app.post("/insertdb", urlencodedParser, function(req, res){
                 return;
             }
             console.log(result.ops);
-            db.close();
+            client.close();
         });
     });
 });
 
 
 app.post("getFromDB", urlencodedParser, function(req, res){
-    MongoClient.connect(dburl, function(err, db){
+    MongoClient.connect(dburl, function (err, client) {
+        let db = client.db(dbname);
         let collection = db.collection("games");
 
         res = collection.find();
-        db.close();
+        client.close();
         return res;
     });
 });
