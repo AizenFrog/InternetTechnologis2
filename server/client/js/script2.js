@@ -518,8 +518,13 @@ window.onbeforeunload = function(){
 // завершение игры
 
 function transition(){
-    dateEnd = Date();
-    console.log(dateEnd - dateStart);
+    dateEnd = new Date();
+    console.log(dateEnd.getMinutes() - dateStart.getMinutes());
+    console.log(dateEnd.getSeconds() - dateStart.getSeconds())
+    let timeOfGame = {
+        minutes: dateEnd.getMinutes() - dateStart.getMinutes(),
+        seconds: dateEnd.getSeconds() - dateStart.getSeconds()
+    };
     console.log(JSON.stringify(dateEnd));
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
